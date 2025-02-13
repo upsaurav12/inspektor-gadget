@@ -23,39 +23,29 @@ import (
 func TestWithFields(t *testing.T) {
 	tests := []struct {
 		name     string
-		field    []string
-		expected struct {
-			fields     []string
-			useDefault bool
-		}
-		option Option
+		fields   []string
+		expected *Formatter
 	}{
 		{
-			name:  "Testing WithFields with custom values",
-			field: []string{"field"},
-			expected: struct {
-				fields     []string
-				useDefault bool
-			}{
-				fields:     []string{"field"},
+			name:     "when fields is nil",
+			fields:   nil,
+			expected: &Formatter{},
+		},
+		{
+			name:   "when fields is not nil",
+			fields: []string{"field1", "field2"},
+			expected: &Formatter{
 				useDefault: false,
-			},
-			option: func(formatter *Formatter) {
-				formatter.fields = []string{"field"}
-				formatter.useDefault = false
-				formatter.array = false
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			formatter := &Formatter{}
-			actual := WithFields(test.field)
-			actual(formatter)
-			test.option(formatter)
-			assert.Equal(t, test.expected.fields, formatter.fields)
-			assert.Equal(t, test.expected.useDefault, formatter.useDefault)
+			form := &Formatter{}
+			actual := WithFields(test.fields)
+			actual(form)
+			assert.Equal(t, test.expected.useDefault, form.useDefault)
 		})
 	}
 }
@@ -64,41 +54,33 @@ func TestWithShowAll(t *testing.T) {
 	tests := []struct {
 		name     string
 		val      bool
-		expected struct {
-			showAll    bool
-			useDefault bool
-			array      bool
-		}
-		option Option
+		expected *Formatter
 	}{
 		{
-			name: "Testing WithShowAll with custom values",
+			name: "when val is false",
+			val:  false,
+			expected: &Formatter{
+				showAll:    false,
+				useDefault: true,
+			},
+		},
+		{
+			name: "when val is true",
 			val:  true,
-			expected: struct {
-				showAll    bool
-				useDefault bool
-				array      bool
-			}{
+			expected: &Formatter{
 				showAll:    true,
 				useDefault: true,
-				array:      false,
-			},
-			option: func(formatter *Formatter) {
-				formatter.showAll = true
-				formatter.useDefault = true
-				formatter.array = false
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			formatter := &Formatter{}
+			form := &Formatter{}
 			actual := WithShowAll(test.val)
-			actual(formatter)
-			test.option(formatter)
-			assert.Equal(t, test.expected.showAll, formatter.showAll)
-			assert.Equal(t, test.expected.useDefault, formatter.useDefault)
+			actual(form)
+			assert.Equal(t, test.expected.useDefault, form.useDefault)
+			assert.Equal(t, test.expected.showAll, form.showAll)
 		})
 	}
 }
@@ -108,38 +90,35 @@ func TestWithPretty(t *testing.T) {
 		name     string
 		val      bool
 		indent   string
-		expected struct {
-			pretty bool
-			indent string
-		}
-		option Option
+		expected *Formatter
 	}{
 		{
-			name:   "Testing WithPretty with custom values",
-			val:    true,
-			indent: "example indent",
-			expected: struct {
-				pretty bool
-				indent string
-			}{
-				pretty: true,
-				indent: "example indent",
+			name:   "when val is false",
+			val:    false,
+			indent: "",
+			expected: &Formatter{
+				pretty: false,
+				indent: "",
 			},
-			option: func(formatter *Formatter) {
-				formatter.pretty = true
-				formatter.indent = "example indent"
+		},
+		{
+			name:   "when val is true",
+			val:    true,
+			indent: "indent",
+			expected: &Formatter{
+				pretty: true,
+				indent: "indent",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			formatter := &Formatter{}
+			form := &Formatter{}
 			actual := WithPretty(test.val, test.indent)
-			actual(formatter)
-			test.option(formatter)
-			assert.Equal(t, test.expected.pretty, formatter.pretty)
-			assert.Equal(t, test.expected.indent, formatter.indent)
+			actual(form)
+			assert.Equal(t, test.expected.pretty, form.pretty)
+			assert.Equal(t, test.expected.indent, form.indent)
 		})
 	}
 }
@@ -148,32 +127,30 @@ func TestWithArray(t *testing.T) {
 	tests := []struct {
 		name     string
 		val      bool
-		expected struct {
-			array bool
-		}
-		option Option
+		expected *Formatter
 	}{
 		{
-			name: "Testing WithArray with custom values",
-			val:  true,
-			expected: struct {
-				array bool
-			}{
-				array: true,
+			name: "when val is false",
+			val:  false,
+			expected: &Formatter{
+				array: false,
 			},
-			option: func(formatter *Formatter) {
-				formatter.array = true
+		},
+		{
+			name: "when val is true",
+			val:  true,
+			expected: &Formatter{
+				array: true,
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			formatter := &Formatter{}
+			form := &Formatter{}
 			actual := WithArray(test.val)
-			actual(formatter)
-			test.option(formatter)
-			assert.Equal(t, test.expected.array, formatter.array)
+			actual(form)
+			assert.Equal(t, test.expected.array, form.array)
 		})
 	}
 }
